@@ -1,0 +1,123 @@
+@model CoderCalender.Models.UserModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+@{
+    int count = 0;
+    if (ViewData["count"] != null)
+    {
+        count = (int)ViewData["count"]!;
+    }
+    List<ContestModel> contests = (List<ContestModel>)ViewData["contest_list"]!;
+}
+<div>
+    <h4>UserModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.passwordHash)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.passwordHash)
+        </dd>
+    </dl>
+    <table class="table table-hover">
+
+        <tr id="header">
+            <th>Platform</th>
+            <th>Title</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration</th>
+            <th>Status</th>
+
+            <th>Bookmark</th>
+
+        </tr>
+        @for (int i = 0; i < count; i++)
+        {
+            ContestModel contest = contests[i];
+            <tr id="tr-@contest.id">
+                <td>@contest.platform</td>
+                <td><a href="@contest.link">@contest.title</a></td>
+                <td>@contest.start</td>
+                <td>@contest.end</td>
+                <td>@contest.duration</td>
+                <td>@contest.status</td>
+                <td>
+                    <button id="@contest.id" name="bookmark" type="button" class="btn btn-success">Bookmarked</button>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+
+<script>
+    function changeButtonText(button) {
+        console.log("changeButton text", button.innerHTML, button.className)
+        if (button.innerHTML == "Delete Bookmark") {
+            button.innerHTML = "Bookmarked"
+            button.className = "btn btn-success"
+        } else if (button.innerHTML == "Add Bookmark") {
+            button.innerHTML = "Bookmark"
+            button.className = "btn btn-primary"
+        } else if (button.innerHTML == "Bookmark") {
+            button.innerHTML = "Add Bookmark"
+            button.className = "btn btn-outline-success"
+        } else if (button.innerHTML == "Bookmarked") {
+            button.innerHTML = "Delete Bookmark"
+            button.className = "btn btn-outline-danger"
+        }
+    }
+    function onButtonClicked(button) {
+        let tr = document.getElementById("tr-"+button.id);
+        tr.style.display = 'none';
+
+        console.log("clicked ", button.id)
+        $.ajax({
+            type: "POST",
+            url: "/Account/BookmarkToggle",
+            data: { link: button.id },
+            datatype: "text",
+
+            success: function (res) {
+                location.reload();
+            },
+            failure: function (response) {
+                alert("failure");
+            },
+            error: function (response) {
+                alert("error");
+            },
+        });
+    }
+    function BookmarkInit() {
+        let buttons = $("button[type=button][name=bookmark]")
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener("mouseover", function () {
+                changeButtonText(this)
+            })
+            buttons[i].addEventListener("mouseout", function () {
+                changeButtonText(this)
+            })
+            buttons[i].addEventListener("click", function () {
+                console.log("clicked")
+                onButtonClicked(this);
+            })
+        }
+        return buttons
+    }
+    document.addEventListener("DOMContentLoaded", function (event) {
+        BookmarkInit();
+    })
+</script>

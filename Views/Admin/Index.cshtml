@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Upcoming Contest";
+}
+
+<h2>Upcoming Contest</h2>
+@{
+    List<ContestModel> contests = (List<ContestModel>)ViewData["contestList"]!;
+    List<ContestListModel> contestBookmarkList = (List<ContestListModel>)ViewData["contestBookmarkList"]!;
+    List<UserModel> userList = (List<UserModel>)ViewData["userList"]!;
+}
+@* CONTEST TABLE *@
+<table class="table table-hover">
+
+    <tr>
+        <th>Platform</th>
+        <th>Title</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Duration</th>
+        <th>Status</th>
+        <th></th>
+    </tr>
+    @for (int i = 0; i < contests.Count; i++)
+    {
+        ContestModel contest = contests[i];
+        <tr>
+            <td>@contest.platform</td>
+            <td><a href="@contest.link">@contest.title</a></td>
+            <td>@contest.start</td>
+            <td>@contest.end</td>
+            <td>@contest.duration</td>
+            <td>@contest.status</td>
+            <td>
+                <a class="btn btn-info" asp-controller="Contest"  asp-action="Details" asp-route-id="@contest.id">Details</a>
+            </td>
+        </tr>
+    }
+</table>
+@* USER MODEL TABLE *@
+<table class="table table-hover">
+
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Password Hash</th>
+        <th></th>
+    </tr>
+    @for (int i = 0; i < userList.Count; i++)
+    {
+        UserModel user = userList[i];
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.name</td>
+            <td>@user.passwordHash</td>
+            <td>
+                <a class="btn btn-info" asp-controller="User" asp-action="Details" asp-route-id="@user.Id">Details</a>
+            </td>
+        </tr>
+    }
+</table>
+@* CONTEST LIST MODEL *@
+<table class="table table-hover">
+
+    <tr>
+        <th>ID</th>
+        <th>Contest ID</th>
+        <th>User ID</th>
+        <th></th>
+    </tr>
+    @for (int i = 0; i < contestBookmarkList.Count; i++)
+    {
+        ContestListModel contestListModel = contestBookmarkList[i];
+        <tr>
+            <td>@contestListModel.Id</td>
+            <td>@contestListModel.contestId</td>
+            <td>@contestListModel.userId</td>
+            <td>
+                <a class="btn btn-info" asp-controller="ContestList" asp-action="Details" asp-route-id="@contestListModel.Id">Details</a>
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "Upcoming Contest";
+}
+
+<h2>Upcoming Contest</h2>
+
+
+@{
+    int count = 0;
+    if (ViewData["contests_count"] != null)
+    {
+        count = (int)ViewData["contests_count"]!;
+    }
+    List<ContestModel> contests = (List<ContestModel>)ViewData["contests"]!;
+    List<string> platformNames = (List<string>)ViewData["platforms"]!;
+    UserModel? userNow = (UserModel?)ViewData["user"];
+    ContestBookmarkContext? contestBookmarkContext = (ContestBookmarkContext?)ViewData["ContestBookmarkContext"];
+}
+@for (int i = 0; i < platformNames.Count; i++)
+{
+    <input name="platforms" type="checkbox" class="btn-check" id="@platformNames[i]">
+    <label class="btn btn-outline-primary" for="@platformNames[i]">@platformNames[i]</label>
+}
+
+<table class="table table-hover  table-dark table-striped">
+
+    <tr id="header">
+        <th>Platform</th>
+        <th>Title</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Duration</th>
+        <th>Status</th>
+        @if (userNow != null)
+        {
+            <th>Bookmark</th>
+        }
+    </tr>
+    @for (int i = 0; i < count; i++)
+    {
+        ContestModel contest = contests[i];
+        <tr id="@contest.platform">
+            <td>@contest.platform</td>
+            <td><a href="@contest.link">@contest.title</a></td>
+            <td>@contest.start</td>
+            <td>@contest.end</td>
+            <td>@contest.duration</td>
+            <td>@contest.status</td>
+            @if (userNow != null)
+            {
+                <td>
+                    @if (contest.isBookmarked(userNow, contestBookmarkContext))
+                    {
+                        <button id="@contest.id" name="bookmark" type="button" class="btn btn-success">Bookmarked</button>
+                    }
+                    else
+                    {
+                        <button id="@contest.id" name="bookmark" type="button" class="btn btn-primary">Bookmark</button>
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+<script>
+    function filterInit() {
+        let checkboxes = $("input[type=checkbox][name=platforms]")
+        let enabled = []
+        checkboxes.change(function () {
+            enabled = checkboxes.filter(":checked").map(function () {
+                return this.id;
+            }).get();
+            console.log(enabled);
+            enabled.push("header");
+            let trs = document.getElementsByTagName("tr");
+            for (var i = 0; i < trs.length; i++) {
+                console.log(trs[i].id);
+                if (enabled.includes(trs[i].id) == false) {
+                    trs[i].style.display = 'none';
+                } else {
+                    trs[i].style.display = 'table-row';
+                }
+            }
+        })
+    }
+    function changeButtonText(button) {
+        console.log("changeButton text", button.innerHTML, button.className)
+        if (button.innerHTML == "Delete Bookmark") {
+            button.innerHTML = "Bookmarked"
+            button.className = "btn btn-success"
+        } else if (button.innerHTML == "Add Bookmark") {
+            button.innerHTML = "Bookmark"
+            button.className = "btn btn-primary"
+        } else if (button.innerHTML == "Bookmark") {
+            button.innerHTML = "Add Bookmark"
+            button.className = "btn btn-outline-success"
+        } else if (button.innerHTML == "Bookmarked") {
+            button.innerHTML = "Delete Bookmark"
+            button.className = "btn btn-outline-danger"
+        }
+    }
+    function toggleButton(button) {
+        console.log("toggleButton" , button.innerHTML , button.className)
+        if (button.innerHTML == "Bookmark") {
+            button.innerHTML == "Bookmarked";
+            button.className = "btn btn-outline-success";
+        }
+        else {
+            button.innerHTML = "Bookmark";
+            button.className = "btn btn-primary";
+        }
+    }
+    function onButtonClicked(button) {
+        toggleButton(button);
+        console.log("clicked ", button.id)
+        $.ajax({
+            type: "POST",
+            url: "Home/BookmarkToggle",
+            data: { link: button.id },
+            datatype: "text",
+
+            success: function (res) {
+                location.reload();
+            },
+            failure: function (response) {
+                alert("failure");
+            },
+            error: function (response) {
+                alert("error");
+            },
+        });
+    }
+    function BookmarkInit() {
+        let buttons = $("button[type=button][name=bookmark]")
+
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener("mouseover", function () {
+                changeButtonText(this)
+            })
+            buttons[i].addEventListener("mouseout", function () {
+                changeButtonText(this)
+            })
+            buttons[i].addEventListener("click", function () {
+                console.log("clicked")
+                onButtonClicked(this);
+            })
+        }
+        return buttons
+    }
+    document.addEventListener("DOMContentLoaded", function (event) {
+        filterInit();
+        BookmarkInit();
+    })
+</script>

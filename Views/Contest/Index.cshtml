@@ -1,0 +1,71 @@
+@model IEnumerable<CoderCalender.Models.ContestModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.start)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.end)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.link)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.platform)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.start)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.end)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.link)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.platform)
+            </td>
+            <td>
+                
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.id">Details</a> 
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

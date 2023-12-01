@@ -1,0 +1,30 @@
+@model CoderCalender.Models.ContestListModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>ContestListModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.userId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.userId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.contestId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.contestId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a class="btn btn-danger"asp-action="Index">Back to List</a>
+</div>
